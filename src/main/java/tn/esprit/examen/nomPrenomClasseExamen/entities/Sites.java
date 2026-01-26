@@ -3,6 +3,8 @@ package tn.esprit.examen.nomPrenomClasseExamen.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @AllArgsConstructor
 @Getter
@@ -21,5 +23,12 @@ public class Sites {
     private String currencyCode;
     @Enumerated(EnumType.STRING)
     private StatusSites statusSites;
+
+    @OneToMany(mappedBy = "sites", cascade = CascadeType.ALL)
+    private Set<Incident> lincident;
+
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
+    private Set<Equipement> equipements;
+
 
 }

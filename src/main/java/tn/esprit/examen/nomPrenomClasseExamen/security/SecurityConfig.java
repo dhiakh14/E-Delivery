@@ -42,9 +42,11 @@ public class SecurityConfig {
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
                                 "/auth/google",
-                                "/swagger-ui/**",
                                 "users/**",
-                                "/v3/api-docs/**"
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/api/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

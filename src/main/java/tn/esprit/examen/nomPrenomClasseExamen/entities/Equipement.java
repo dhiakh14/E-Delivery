@@ -1,5 +1,7 @@
 package tn.esprit.examen.nomPrenomClasseExamen.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,4 +23,14 @@ public class Equipement {
     private StatusEquipement statusEquipement;
 
     private String serialNumber;
+
+    @ManyToOne
+    @JsonIgnoreProperties("equipements")
+    @JoinColumn(name = "categorie_id")
+    private CategorieEquipement categorie;  // lien vers catégorie
+
+
+    @ManyToOne
+    @JoinColumn(name = "site_id")
+    private Sites site;
 }
