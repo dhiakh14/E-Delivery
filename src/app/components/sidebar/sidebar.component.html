@@ -1,0 +1,99 @@
+<div class="app-shell" [class.collapsed]="collapsed" [class.mobile-open]="mobileOpen">
+
+  <!-- Fond sombre derrière le menu sur mobile -->
+  <div class="overlay" (click)="closeMobile()"></div>
+
+  <!-- =================== SIDEBAR =================== -->
+  <aside class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar-inner">
+
+      <!-- ===== BRAND ===== -->
+      <div class="brand">
+        <div class="brand-icon">🍕</div>
+        <div class="brand-text">
+          <span class="brand-name">Front<b>Food</b></span>
+          <span class="brand-sub">Delivery Admin</span>
+        </div>
+        <button type="button" class="close-btn" (click)="closeMobile()" aria-label="Fermer le menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- ===== USER CARD ===== -->
+      <div class="user-card" [attr.title]="collapsed ? (user?.fullName || 'Utilisateur') : null">
+        <div class="avatar">{{ getInitials(user?.fullName) }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ user?.fullName || 'Utilisateur' }}</span>
+          <span class="user-role">{{ user?.role || 'USER' }}</span>
+        </div>
+      </div>
+
+      <!-- ===== MENU ===== -->
+      <nav class="menu">
+        <div class="menu-section" *ngFor="let section of sections">
+          <div class="menu-section-title"><span>{{ section.title }}</span></div>
+
+          <a *ngFor="let item of section.items"
+             class="menu-item"
+             [routerLink]="item.route"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: false }"
+             [attr.title]="collapsed ? item.label : null"
+             (click)="onItemClick()">
+
+            <span class="menu-icon" [attr.data-icon]="item.icon">
+              <ng-container [ngSwitch]="item.icon">
+                <svg *ngSwitchCase="'dashboard'"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                <svg *ngSwitchCase="'orders'"     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+                <svg *ngSwitchCase="'restaurant'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zM21 15v7"/></svg>
+                <svg *ngSwitchCase="'products'"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                <svg *ngSwitchCase="'food'"       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                <svg *ngSwitchCase="'clients'"    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <svg *ngSwitchCase="'users'"      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <svg *ngSwitchCase="'settings'"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </ng-container>
+            </span>
+
+            <span class="menu-label">{{ item.label }}</span>
+
+            <span class="menu-badge" *ngIf="item.badge">{{ item.badge }}</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- ===== FOOTER ===== -->
+      <div class="sidebar-footer">
+        <button type="button" class="logout-btn" (click)="logout()" [attr.title]="collapsed ? 'Déconnexion' : null">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span class="logout-label">Déconnexion</span>
+        </button>
+        <div class="version">
+          <span class="dot"></span>
+          <span class="version-text">Version 1.0.0</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =================== CONTENU =================== -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="toggle-btn" (click)="toggleMenu()" aria-label="Ouvrir / réduire le menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h10M4 17h16"/></svg>
+      </button>
+
+      <div class="greeting">
+        <h1>Bonjour, {{ firstName }} <span class="wave">👋</span></h1>
+        <p>Prêt à servir de bons plats aujourd'hui ?</p>
+      </div>
+
+      <div class="top-user">
+        <div class="avatar sm">{{ getInitials(user?.fullName) }}</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

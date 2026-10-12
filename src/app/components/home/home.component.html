@@ -1,0 +1,8 @@
+<div class="home-container">
+  <div class="card">
+    <h1>Bienvenue {{ user?.fullName }}</h1>
+    <p><strong>Email :</strong> {{ user?.email }}</p>
+    <p><strong>Rôle :</strong> {{ user?.role }}</p>
+    <button (click)="logout()" class="btn-logout">Déconnexion</button>
+  </div>
+</div>
