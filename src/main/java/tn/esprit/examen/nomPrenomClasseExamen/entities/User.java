@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,8 +49,12 @@ public class  User implements UserDetails, Principal {
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
 
+    // ⚡ Embedding facial stocké en JSON
+    @Column(name = "photo_path")
+    private String photoPath;  // Chemin vers la photo de référence enregistrée
 
-
+    @Column(columnDefinition = "TEXT")
+    private String faceEmbedding;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -60,7 +63,7 @@ public class  User implements UserDetails, Principal {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<tn.esprit.examen.nomPrenomClasseExamen.entities.Role> roles = new HashSet<>();
     @Override
     public String getName() {
         return email;

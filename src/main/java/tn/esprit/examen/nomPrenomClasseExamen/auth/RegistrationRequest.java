@@ -1,35 +1,36 @@
 package tn.esprit.examen.nomPrenomClasseExamen.auth;
 
-
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
-
 public class RegistrationRequest {
 
-    @NotEmpty(message = "FirstName is mandatory")
-    @NotBlank(message = "FirstName is mandatory")
+    @NotEmpty @NotBlank
     private String firstName;
-    @NotEmpty(message = "LastName is mandatory")
-    @NotBlank(message = "LastName is mandatory")
+    @NotEmpty @NotBlank
     private String lastName;
 
-    @Past(message = "Date of birth must be in the past")
+    @Past
     private LocalDate dateOfBirth;
-    @Email(message = "Email is not well formatted")
-    @NotEmpty(message = "Email is mandatory")
-    @NotBlank(message = "Email is mandatory")
+
+    @Email @NotEmpty @NotBlank
     private String email;
-    @NotEmpty(message = "Password is mandatory")
-    @NotBlank(message = "Password is mandatory")
-    @Size(min = 8, message = "password should be 8 caracters long minimum")
+
+    @NotEmpty @NotBlank @Size(min = 8)
     private String password;
+
+    // Pour CLIENT
+    private Long cin;
+
+    // Pour EMPLOYER
+    private String matricule;
+
+    @NotNull
+    private String role; // "CLIENT" ou "EMPLOYER"
 }

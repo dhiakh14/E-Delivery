@@ -27,12 +27,18 @@ public class AuthenticationController {
 
 
     @PostMapping("/Register")
-    @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequest request) throws MessagingException {
-        List<String> roles = List.of("USER");
-        authService.register(request, roles);
-        return ResponseEntity.accepted().build();
+        // Validation selon le rôle
+        if ("CLIENT".equalsIgnoreCase(request.getRole()) && request.getCin() == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "CIN obligatoire pour un client"));
+        }
+        if ("EMPLOYER".equalsIgnoreCase(request.getRole()) && (request.getMatricule() == null || request.getMatricule().isEmpty())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Matricule obligatoire pour un employé"));
+        }
 
+        List<String> roles = List.of(request.getRole().toUpperCase());
+        authService.register(request, roles);
+        return ResponseEntity.ok(Map.of("message", "Compte créé et lié avec succès"));
     }
     @PostMapping("/google")
     public ResponseEntity<AuthenficationResponse> authenticateWithGoogle(

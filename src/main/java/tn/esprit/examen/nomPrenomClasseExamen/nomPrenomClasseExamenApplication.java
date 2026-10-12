@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import tn.esprit.examen.nomPrenomClasseExamen.entities.Role;
 import tn.esprit.examen.nomPrenomClasseExamen.repositories.RoleRepository;
-
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableAsync
@@ -23,10 +22,10 @@ public class nomPrenomClasseExamenApplication {
     @Bean
     public CommandLineRunner runner(RoleRepository rolerepo){
         return args -> {
-            if (rolerepo.findByName("USER").isEmpty()){
-                rolerepo.save(Role.builder().name("USER").build());
-            } if (rolerepo.findByName("AGENTF").isEmpty()) {
-                rolerepo.save(Role.builder().name("AGENTF").build());
+            if (rolerepo.findByName("CLIENT").isEmpty()){
+                rolerepo.save(Role.builder().name("CLIENT").build());
+            } if (rolerepo.findByName("EMPLOYER").isEmpty()) {
+                rolerepo.save(Role.builder().name("EMPLOYER").build());
 
             }
             if (rolerepo.findByName("ADMIN").isEmpty()){

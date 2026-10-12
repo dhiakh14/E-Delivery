@@ -71,7 +71,7 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>(extraClaims);
         claims.put("roles", roles);
         claims.put("idUser", user.getIdUser());
-        claims.put("dateOfBirth",user.getDateOfBirth().toString());
+        claims.put("dateOfBirth", user.getDateOfBirth().toString());
 
         return Jwts.builder()
                 .setClaims(claims)

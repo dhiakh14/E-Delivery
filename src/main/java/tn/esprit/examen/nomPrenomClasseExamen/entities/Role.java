@@ -41,4 +41,7 @@ public class Role {
     @LastModifiedDate
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
+
+    private String entityType; // "CLIENT", "EMPLOYER", "NONE"
+
 }

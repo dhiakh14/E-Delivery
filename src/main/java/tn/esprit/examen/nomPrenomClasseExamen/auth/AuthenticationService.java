@@ -1,7 +1,5 @@
 package tn.esprit.examen.nomPrenomClasseExamen.auth;
 
-
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -34,19 +32,22 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class AuthenticationService {
     private final RoleRepository role;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final EmailService emailService;
+
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
+
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+
     @Value("245614197596-k976h4i3ohnfrvcnpf9rd5rg8iov2pq3.apps.googleusercontent.com")
     private String googleClientId;
+
     @Value("${application.mailing.frontend.reset-password-url}")
     private String resetPasswordUrl;
 
@@ -110,13 +111,10 @@ public class AuthenticationService {
         return sb.toString();
     }
 
-
-
-
     public void register(RegistrationRequest request, List<String> roleNames) throws MessagingException {
         List<Role> roles = roleNames.stream()
                 .map(roleName -> role.findByName(roleName.toUpperCase())
-                        .orElseThrow(() -> new IllegalStateException("Role " + roleName + " was not initialized")))
+                        .orElseThrow(() -> new IllegalStateException("Role " + roleName + " not found")))
                 .collect(Collectors.toList());
 
         var user = User.builder()
@@ -129,10 +127,37 @@ public class AuthenticationService {
                 .enabled(false)
                 .roles(new HashSet<>(roles))
                 .build();
+
         userRepository.save(user);
+
         sendValidationEmail(user);
     }
 
+    public AuthenficationResponse authenficate(AuthenficationRequest request) {
+        var auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        var user = (User) auth.getPrincipal();
+
+        String role = user.getRoles().stream().findFirst()
+                .map(Role::getName)
+                .orElse("UNKNOWN");
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("fullName", user.FullName());
+        claims.put("email", user.getEmail());
+        claims.put("userId", user.getIdUser());
+        claims.put("role", role);
+
+        String jwtToken = jwtService.generateToken(claims, user);
+        return AuthenficationResponse.builder()
+                .token(jwtToken)
+                .userId(user.getIdUser())
+                .fullName(user.FullName())
+                .email(user.getEmail())
+                .role(role)
+                .build();
+    }
 
     private void sendValidationEmail(User user) throws MessagingException {
         var newToken = generateAndSaveActivationToken(user);
@@ -147,7 +172,7 @@ public class AuthenticationService {
     }
 
     private String generateAndSaveActivationToken(User user) {
-        String generatedToken =generateActivationCode(6);
+        String generatedToken = generateActivationCode(6);
         var token = Token.builder()
                 .token(generatedToken)
                 .createdAt(LocalDateTime.now())
@@ -163,43 +188,24 @@ public class AuthenticationService {
         String characters = "0123456789";
         StringBuilder codebuilder = new StringBuilder();
         SecureRandom secureRandom = new SecureRandom();
-        for (int i=0 ; i < length; i++){
+        for (int i = 0; i < length; i++) {
             int randomIndex = secureRandom.nextInt(characters.length());
             codebuilder.append(characters.charAt(randomIndex));
         }
         return codebuilder.toString();
-
-
     }
-
-    public AuthenficationResponse authenficate(AuthenficationRequest request) {
-        var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(), request.getPassword()
-                )
-        );
-        var claims= new HashMap<String , Object>();
-        var user = ((User)auth.getPrincipal());
-        claims.put("fullName", user.FullName());
-        claims.put("dateOfBirth", user.getDateOfBirth());
-        var jwtToken = jwtService.generateToken(claims, user);
-        return AuthenficationResponse.builder().token(jwtToken).build();
-    }
-
 
     public void activateaccount(String token) throws MessagingException {
-        Token savedToken= tokenRepository.findByToken(token).orElseThrow(()-> new RuntimeException("Invalid Token"));
-        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())){
+        Token savedToken = tokenRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Invalid Token"));
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendValidationEmail(savedToken.getUser());
             throw new RuntimeException("Activation Token Has Expired. A new Token has been send to the same email address");
-
         }
-        var user = userRepository.findById(savedToken.getUser().getIdUser()).orElseThrow(()-> new UsernameNotFoundException("User Not Found"));
+        var user = userRepository.findById(savedToken.getUser().getIdUser()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         user.setEnabled(true);
         userRepository.save(user);
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
-
     }
 
     public void forgotPassword(String email) throws MessagingException {
@@ -257,7 +263,4 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));
         return userRepository.save(user);
     }
-
-
-
 }
